@@ -43,7 +43,6 @@ public class NettyServer  {
         ChannelFuture channelFuture = serverBootstrap.bind(IP, port).sync();
 
         channelFuture.channel().closeFuture().sync();
-        System.out.println("server start");
 
     }
 
