@@ -41,8 +41,13 @@ public class NettyServer  {
 
 
         ChannelFuture channelFuture = serverBootstrap.bind(IP, port).sync();
-
+        
+        if (channelFuture.isSuccess()) {
+                System.out.println("启动 Server 成功"); 
+        }
+        
         channelFuture.channel().closeFuture().sync();
+        System.out.println("Server 关闭");
 
     }
 
