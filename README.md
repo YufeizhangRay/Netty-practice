@@ -1,8 +1,64 @@
 # Netty-practice  
   
+- [BIO/NIO/AIO基础](#BIO/NIO/AIO基础)  
+  - [阻塞I/O](#阻塞I/O)  
+  - [非阻塞I/O](#非阻塞I/O)  
+  - [I/O复用](#I/O复用)  
+  - [信号驱动的I/O](#信号驱动的I/O)  
+  - [异步I/O](#异步I/O)  
+- [Java I/O模型](#Java I/O模型)  
+  - [同步阻塞IO](#同步阻塞IO)  
+  - [非阻塞式IO模型(NIO)](#非阻塞式IO模型(NIO))  
+- [Java NIO核心组件](#Java NIO核心组件)  
+  - [Channel](#Channel)  
+  - [Buffer](#Buffer)  
+  - [Selector](#Selector)  
+  - [unsafe](#unsafe)  
+- [Reactor模型](#Reactor模型)    
+- [什么是Netty](#什么是Netty)  
+  - [应用领域](#应用领域)
+- [Netty模型](#Netty模型)  
+- [Netty基础概念](#Netty基础概念)  
+  - [Netty核⼼组件](#Netty核⼼组件)  
+  - [Channel](#Channel)  
+  - [EventLoopGroup](#EventLoopGroup)  
+  - [ChannelPipeline](#ChannelPipeline)  
+- [Netty示例分析](#Netty示例分析)  
+  - [服务端](#服务端)  
+  - [客户端](#客户端)  
+- [Netty线程模型](#Netty线程模型)  
+- [源码分析之ChannelHandler](#源码分析之ChannelHandler)  
+  - [ChannelHandler](#ChannelHandler)  
+  - [ChannelInboundHandler](#ChannelInboundHandler)  
+  - [ChannelOutboundHandler](#ChannelOutboundHandler)  
+  - [ChannelHandlerContext](#ChannelHandlerContext)  
+  - [ChannelPipeline](#ChannelPipeline)  
+- [源码分析之客户端启动](#源码分析之客户端启动)  
+  - [创建Channel](创建Channel)  
+  - [注册Channel到Selector](#注册Channel到Selector)  
+  - [Connect](#Connect)  
+- [源码分析之服务端启动](#源码分析之服务端启动)  
+  - [bind核⼼流程](#bind核⼼流程)  
+  - [注册Channel到EventLoopGroup](#注册Channel到EventLoopGroup)  
+- [源码分析之EventLoop](#源码分析之EventLoop)  
+  - [关于Reactor的线程模型](#关于Reactor的线程模型)  
+  - [NioEventLoopGroup与Reactor线程模型的对应](#NioEventLoopGroup与Reactor线程模型的对应)  
+  - [NioEventLoopGroup](#NioEventLoopGroup)    
+  - [NioEventLoop](#NioEventLoop)  
+  - [EventLoop与Channel的关联](#EventLoop与Channel的关联)  
+  - [EventLoop的启动](#EventLoop的启动)  
+- [源码分析之IO处理循环](#源码分析之IO处理循环)  
+  - [thread的run循环](#thread的run循环)  
+  - [IO事件的轮询](#IO事件的轮询)  
+  - [IO事件的处理](#IO事件的处理)  
+- [源码分析之任务队列机制](#源码分析之任务队列机制)  
+  - [Task的添加](#Task的添加)  
+  - [任务的执行](#任务的执行)  
+  - [整体回顾](#整体回顾)  
+  
 ## I/O模型分析 Netty学习实践 源码分析  
   
-### BIO/NIO/AIO 基础  
+### BIO/NIO/AIO基础  
   
 #### 阻塞I/O  
 ![](https://github.com/YufeizhangRay/image/blob/master/Netty/%E9%98%BB%E5%A1%9EIO.jpeg)  
@@ -123,9 +179,9 @@ Netty 是一种可以轻松快速的开发协议服务器和客户端网络应�
 ![](https://github.com/YufeizhangRay/image/blob/master/Netty/%E5%BA%94%E7%94%A8%E9%A2%86%E5%9F%9F.jpeg)  
   
 >1. 互联网领域:构建高性能RPC框架基础通信组件，阿里分布式服务框架 Dubbo 的 RPC 框架使用 Dubbo 协议进行节点间通信，Dubbo 协议默认使用 Netty 作为基础通信组件，用于实现各进程节点之间的内部通信。  
-2. ⼤数据领域:经典的 Hadoop 的⾼性能通信和序列化组件 Avro 的 RPC 框架，默认采用 Netty 进⾏跨节点通信，它的 Netty Service 基于 Netty 框架二次封装实现。  
-3. 游戏行业:⽆论是手游服务端、还是大型的⽹络游戏，Java 语⾔得到了越来越⼴泛的应⽤。 Netty 作为高性能的基础通信组件，它本身提供了 TCP/UDP 和 HTTP 协议栈，非常⽅便定制和开发私有协议栈，账号登陆服务器、地图服务器之间可以方便的通过 Netty 进行⾼性能的通信。  
-4. 通信行业:Netty 的异步⾼性能、高可靠性和高成熟度的优点，使它在通信行业得到了⼤量的应用。  
+>2. ⼤数据领域:经典的 Hadoop 的⾼性能通信和序列化组件 Avro 的 RPC 框架，默认采用 Netty 进⾏跨节点通信，它的 Netty Service 基于 Netty 框架二次封装实现。  
+>3. 游戏行业:⽆论是手游服务端、还是大型的⽹络游戏，Java 语⾔得到了越来越⼴泛的应⽤。 Netty 作为高性能的基础通信组件，它本身提供了 TCP/UDP 和 HTTP 协议栈，非常⽅便定制和开发私有协议栈，账号登陆服务器、地图服务器之间可以方便的通过 Netty 进行⾼性能的通信。  
+>4. 通信行业:Netty 的异步⾼性能、高可靠性和高成熟度的优点，使它在通信行业得到了⼤量的应用。  
   
 ### Netty模型  
 ![](https://github.com/YufeizhangRay/image/blob/master/Netty/Netty%E6%A8%A1%E5%9E%8B.jpeg)  
@@ -145,7 +201,7 @@ HTTP Tunnel :HTTP 通道的传输实现。
 In-VM Piple :JVM 内部的传输实现。  
 Protocol Support :协议支持。Netty 对于⼀些通用协议的编解码实现。例如:HTTP、 Redis、DNS 等等。  
    
-#### Netty核⼼心组件  
+#### Netty核⼼组件  
 Netty 有如下⼏几个核⼼心组件:  
 >Bootstrap & ServerBootstrap  
 Channel  
@@ -154,8 +210,8 @@ EventLoop & EventLoopGroup
 ChannelHandler  
 ChannelPipeline  
   
-### Channel   
-也就是通道，这个概念是在 JDK NIO 类库里面提供的一个概念，JDK 中其实现类有客户端套接字通 道 java.nio.channels.SocketChannel 和服务端监听套接字通道 java.nio.channels.ServerSocketChannel，Channel 的出现是为了支持异步 IO 操作，JDK 里面的通道是 java.nio.channels.Channel。io.netty.channel.Channel 是 Netty 框架自己定义的一个通道接口，Netty 实现的客户端 NIO 套接字通道是 NioSocketChannel，提供的服务器端 NIO 套接字通道是 NioServerSocketChannel。  
+#### Channel   
+也就是通道，这个概念是在 JDK NIO 类库里面提供的一个概念，JDK 中其实现类有客户端套接字通道 java.nio.channels.SocketChannel 和服务端监听套接字通道 java.nio.channels.ServerSocketChannel，Channel 的出现是为了支持异步 IO 操作，JDK 里面的通道是 java.nio.channels.Channel。io.netty.channel.Channel 是 Netty 框架自己定义的一个通道接口，Netty 实现的客户端 NIO 套接字通道是 NioSocketChannel，提供的服务器端 NIO 套接字通道是 NioServerSocketChannel。  
   
 NioSocketChannel  
 客户端套接字通道，内部管理了一个 Java NIO 中的 java.nio.channels.SocketChannel 实例，用来创建 SocketChannel 实例和设置该实例的属性，并调用 Connect 方法向服务端发起 TCP 链接等。 
@@ -186,7 +242,7 @@ Netty 中的 ChannelPipeline 类似于 Tomcat 容器中的 Filter 链，属于�
 需要注意一点是虽然每个 Channel(更底层说是每个 socket)有自己的 ChannelPipeline，但是每个 ChannelPipeline 里面可以复用一个 ChannelHandler。   
 ### Netty示例分析   
    
-看此示例前一定要熟悉Java本身的NIO编程，可以参考本仓库上传的源代码。  
+看此示例前一定要熟悉Java本身的NIO编程，可以参考本仓库上的源代码。  
 ```
 结构:  
 ├── client   
@@ -543,8 +599,9 @@ protected void onUnhandledInboundMessage(Object msg) {
 >4. ChannelHandlerContext同时也会持有ChannelPipeline引用，也就相当于持有Channel引用  
 >5. ChannelHandler链路会根据Handler的类型，分为InBound和OutBound两条链路  
   
-### 源码分析之Netty客户端启动  
+### 源码分析之客户端启动  
   
+#### 创建Channel  
 在讲解 Netty 客户端程序时候我们提到指定 NioSocketChannel 用于创建客户端 NIO 套接字通道的实例，下面我们来看 NioSocketChannel 是如何创建一个 Java NIO 里面的 SocketChannel 的。首先我们来看 NioSocketChannel 的构造函数:
 ```
 public NioSocketChannel() { 
@@ -605,6 +662,7 @@ protected AbstractNioChannel(Channel parent, SelectableChannel ch, int readInter
 3.AbstractNioChannel  
 4.AbstractChannel  
   
+#### 注册Channel到Selector
 下面我们看 Netty 里面是哪里创建的 NioSocketChannel 实例，哪里注册到选择器的。  
 下面我们看下 Bootstrap 的 connect 操作代码:  
 ```
@@ -695,6 +753,7 @@ protected void doRegister() throws Exception {
     } 
 }
 ```
+#### Connect
 到这里代码(1)initAndRegister 的流程讲解完毕了，下面我们来看代码(2)的
 ```
 public final void connect(final SocketAddress remoteAddress, final SocketAddress localAddress, final ChannelPromise promise) {
@@ -824,9 +883,9 @@ protected void doBeginRead() throws Exception {
 代码(5)如果当前是 op_accept 事件说明是服务器监听套接字获取到了一个链接套接字，如果是 op_read,则说明可 以读取客户端发来的数据了，如果是后者则会激活管线里面的所有 handler 的 channelRead 方法，这里会激活我们自定义的 NettyClientHandler 的 channelRead 读取客户端发来的数据，然后在向客户端写入数据。  
 ![](https://github.com/YufeizhangRay/image/blob/master/Netty/connect%E6%B5%81%E7%A8%8B.jpeg)  
   
-### Netty源码分析之服务端启动   
+### 源码分析之服务端启动   
   
-#### bind:核⼼心流程  
+#### bind核⼼流程  
 ![](https://github.com/YufeizhangRay/image/blob/master/Netty/bind%E6%B5%81%E7%A8%8B.jpeg)  
                               
  >doBind()   
@@ -838,14 +897,14 @@ protected void doBeginRead() throws Exception {
    
  >beginRead()
    
-#### 创建 Channel 对象  
+#### 创建Channel对象  
 newChannel 在客户端中已经讲过。  
   
-#### 初始化 Channel 配置    
+#### 初始化Channel配置    
 abstract void init(Channel channel) throws Exception;   
 用来将option()方法设置的属性进行初始化。  
   
-#### 注册 Channel 到 EventLoopGroup  
+#### 注册Channel到EventLoopGroup  
   
 EventLoopGroup#register(Channel channel) ⽅法，注册 Channel 到 EventLoopGroup 中。整体流程如下:  
 ![](https://github.com/YufeizhangRay/image/blob/master/Netty/%E6%B3%A8%E5%86%8C%E6%B5%81%E7%A8%8B.jpeg)  
@@ -889,12 +948,12 @@ execute
 24: }
 ```    
 
-### Netty源码分析之EventLoop  
+### 源码分析之EventLoop  
   
 NioEventLoopGroup  
 一个 Netty 程序启动时，至少要指定一个 EventLoopGroup(如果使用到的是 NIO, 那么通常是 NioEventLoopGroup), 那么这个 NioEventLoopGroup 在 Netty 中到底扮演着什么角色呢? 我们知道, Netty 是 Reactor 模型的一个实现, 那么首先从 Reactor 的线程模型开始吧。  
 
-#### 关于 Reactor 的线程模型  
+#### 关于Reactor的线程模型  
 首先我们再次来看一下 Reactor 的线程模型。  
 Reactor 的线程模型有三种:  
 >单线程模型  
@@ -966,7 +1025,9 @@ bossGroup 线程池中的线程数我们设置为4, 而 workerGroup 中的线程
 Netty 的服务器端的 acceptor 阶段, 没有使用到多线程, 因此上面的 主从多线程模型 在 Netty 的服务器端是不存在的.  
   
 服务器端的 ServerSocketChannel 只绑定到了 bossGroup 中的一个线程, 因此在调用 Java NIO 的 Selector.select 处理客户端的连接请求时, 实际上是在一个线程中的, 所以对只有一个服务的应用来说, bossGroup 设置多个线程是 没有什么作用的, 反而还会造成资源浪费.  
-
+  
+#### NioEventLoopGroup  
+  
 #### NioEventLoopGroup类层次结构  
 ![](https://github.com/YufeizhangRay/image/blob/master/Netty/NioEventLoopGroup%E7%B1%BB%E5%B1%82%E6%AC%A1%E7%BB%93%E6%9E%84.jpeg)  
   
@@ -1123,8 +1184,8 @@ public void execute(Runnable task) {
 接下来我们先从 IO 操纵方面入手, 看一下 TCP 数据是如何从 Java NIO Socket 传递到我们的 handler 中的.  
 Netty 是 Reactor 模型的一个实现, 并且是基于 Java NIO 的, 那么从 Java NIO 的前生今世 之四 NIO Selector 详解 中我们知道, Netty 中必然有一个 Selector 线程, 用于不断调用 Java NIO 的 Selector.select 方法, 查询当前是否有就绪的 IO 事件. 回顾一下在 Java NIO 中所讲述的 Selector 的使用流程:  
 >1. 通过 Selector.open() 打开一个 Selector.  
-2. 将 Channel 注册到 Selector 中, 并设置需要监听的事件(interest set)  
-3. 不断重复:  
+>2. 将 Channel 注册到 Selector 中, 并设置需要监听的事件(interest set)  
+>3. 不断重复:  
 >>调用 select() 方法  
 调用 selector.selectedKeys() 获取 selected keys   
 迭代每个 selected key:  
@@ -1536,8 +1597,8 @@ public final void read() {
 ```
 read() 源码比较长, 我为了篇幅起见, 删除了部分代码, 只留下了主干. 不过我建议读者朋友们自己一定要看一下 read() 源码, 这对理解 Netty 的 EventLoop 十分有帮助. 上面 read 方法其实归纳起来, 可以认为做了如下工作:
 >1. 分配 ByteBuf  
-2. 从 SocketChannel 中读取数据  
-3. 调用 pipeline.fireChannelRead 发送一个 inbound 事件.  
+>2. 从 SocketChannel 中读取数据  
+>3. 调用 pipeline.fireChannelRead 发送一个 inbound 事件.  
   
 前面两点没什么好说的, 第三点 pipeline.fireChannelRead 读者朋友们看到了有没有会心一笑地感觉呢? 反正我看到这里时是有的.   pipeline.fireChannelRead 是 inbound 事件起点. 当调用了 pipeline.fireIN_EVT() 后, 那么就产生了一 个 inbound 事件, 此事件会以 head -> customContext -> tail 的方向依次流经 ChannelPipeline 中的各个 handler. 调用了 pipeline.fireChannelRead 后, 就是 ChannelPipeline 中所需要做的工作了.    
   
@@ -1564,14 +1625,14 @@ if ((readyOps & SelectionKey.OP_CONNECT) != 0) {
 ```
 OP_CONNECT 事件的处理中, 只做了两件事情:  
 >1. 正如代码中的注释所言, 我们需要将 OP_CONNECT 从就绪事件集中清除, 不然会一直有 OP_CONNECT 事件.  
-2. 调用 unsafe.finishConnect() 通知上层连接已建立.  
+>2. 调用 unsafe.finishConnect() 通知上层连接已建立.  
   
 unsafe.finishConnect() 调用最后会调用到 pipeline().fireChannelActive(), 产生一个 inbound 事件, 通知 pipeline 中的各个 handler TCP 通道已建立(即 ChannelInboundHandler.channelActive 方法会被调用) 到了这里, 我们整个 NioEventLoop 的 IO 操作部分已经了解完了, 接下来的一节我们要重点分析一下 Netty 的任务队列机制.  
 
-### Netty 的任务队列机制  
+### Netty的任务队列机制  
 我们已经提到过, 在Netty 中, 一个 NioEventLoop 通常需要肩负起两种任务, 第一个是作为 IO 线程, 处理 IO 操作; 第二个就是作为任务线程, 处理 taskQueue 中的任务. 这一节的重点就是分析一下 NioEventLoop 的任务队列机制的.  
   
-#### Task 的添加  
+#### Task的添加  
 普通 Runnable 任务  
 NioEventLoop 继承于 SingleThreadEventExecutor, 而 SingleThreadEventExecutor 中有一个 Queue taskQueue 字段, 用于存放添加的 Task. 在 Netty 中, 每个 Task 都使用一个实现了 Runnable 接口的实例来表示. 例如当我们需要将一个 Runnable 添加到 taskQueue 中时, 我们可以进行如下操作:
 ```
@@ -1662,7 +1723,7 @@ public  ScheduledFuture<?> schedule(Runnable command, long delay, TimeUnit unit)
 ```
 在这个方法中, ScheduledFutureTask 对象就会被添加到 scheduledTaskQueue 中了.  
 
-### 任务的执行  
+#### 任务的执行  
 当一个任务被添加到 taskQueue 后, 它是怎么被 EventLoop 执行的呢? 让我们回到 NioEventLoop.run() 方法中, 在这个方法里, 会分别调用 processSelectedKeys() 和 runAllTasks() 方法, 来进行 IO 事件的处理和 task 的处理. processSelectedKeys() 方法我们已经分析过了, 下面我们来看一下 runAllTasks() 中到底有什么名堂吧. runAllTasks 方法有两个重载的方法, 一个是无参数的, 另一个有一个参数的. 首先来看一下无参数的 runAllTasks:
 ```
 protected boolean runAllTasks() {
