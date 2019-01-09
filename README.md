@@ -1,6 +1,6 @@
 # Netty-practice  
   
-- [BIO/NIO/AIO基础](#bio/nio/aio基础)  
+- [BIO/NIO/AIO基础](#bionioaio基础)  
   - [阻塞I/O](#阻塞i/o)  
   - [非阻塞I/O](#非阻塞i/o)  
   - [I/O复用](#i/o复用)  
