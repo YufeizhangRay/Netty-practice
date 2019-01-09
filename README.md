@@ -34,7 +34,7 @@
   - [ChannelHandlerContext](#channelhandlercontext)  
   - [ChannelPipeline](#channelpipeline)  
 - [源码分析之客户端启动](#源码分析之客户端启动)  
-  - [创建Channel](创建channel)  
+  - [创建Channel](#创建channel)  
   - [注册Channel到Selector](#注册channel到selector)  
   - [Connect](#connect)  
 - [源码分析之服务端启动](#源码分析之服务端启动)  
@@ -202,7 +202,7 @@ In-VM Piple :JVM 内部的传输实现。
 Protocol Support :协议支持。Netty 对于⼀些通用协议的编解码实现。例如:HTTP、 Redis、DNS 等等。  
    
 #### Netty核⼼组件  
-Netty 有如下⼏几个核⼼心组件:  
+Netty 有如下⼏个核心组件:  
 >Bootstrap & ServerBootstrap  
 Channel  
 ChannelFuture  
