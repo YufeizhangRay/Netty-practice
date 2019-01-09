@@ -1180,7 +1180,7 @@ public void execute(Runnable task) {
 ```
 我们已经分析过了, inEventLoop == false, 因此执行到 else 分支, 在这里就调用了 startThread() 方法来启动 SingleThreadEventExecutor 内部关联的 Java 本地线程了. 总结一句话, 当 EventLoop.execute 第一次被调用时, 就会触发 startThread() 的调用, 进而导致了 EventLoop 所对应的 Java 线程的启动.   
   
-### Netty的IO处理循环  
+### 源码分析之IO处理循环  
 接下来我们先从 IO 操纵方面入手, 看一下 TCP 数据是如何从 Java NIO Socket 传递到我们的 handler 中的.  
 Netty 是 Reactor 模型的一个实现, 并且是基于 Java NIO 的, 那么从 Java NIO 的前生今世 之四 NIO Selector 详解 中我们知道, Netty 中必然有一个 Selector 线程, 用于不断调用 Java NIO 的 Selector.select 方法, 查询当前是否有就绪的 IO 事件. 回顾一下在 Java NIO 中所讲述的 Selector 的使用流程:  
 >1. 通过 Selector.open() 打开一个 Selector.  
@@ -1629,7 +1629,7 @@ OP_CONNECT 事件的处理中, 只做了两件事情:
   
 unsafe.finishConnect() 调用最后会调用到 pipeline().fireChannelActive(), 产生一个 inbound 事件, 通知 pipeline 中的各个 handler TCP 通道已建立(即 ChannelInboundHandler.channelActive 方法会被调用) 到了这里, 我们整个 NioEventLoop 的 IO 操作部分已经了解完了, 接下来的一节我们要重点分析一下 Netty 的任务队列机制.  
 
-### Netty的任务队列机制  
+### 源码分析之任务队列机制  
 我们已经提到过, 在Netty 中, 一个 NioEventLoop 通常需要肩负起两种任务, 第一个是作为 IO 线程, 处理 IO 操作; 第二个就是作为任务线程, 处理 taskQueue 中的任务. 这一节的重点就是分析一下 NioEventLoop 的任务队列机制的.  
   
 #### Task的添加  
