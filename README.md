@@ -1,12 +1,12 @@
 # Netty-practice  
   
 - [BIO/NIO/AIO基础](#bionioaio基础)  
-  - [阻塞I/O](#阻塞i/o)  
-  - [非阻塞I/O](#非阻塞i/o)  
-  - [I/O复用](#i/o复用)  
-  - [信号驱动的I/O](#信号驱动的i/o)  
-  - [异步I/O](#异步i/o)  
-- [Java I/O模型](#java-i/o模型)  
+  - [阻塞I/O](#阻塞io)  
+  - [非阻塞I/O](#非阻塞io)  
+  - [I/O复用](#io复用)  
+  - [信号驱动的I/O](#信号驱动的io)  
+  - [异步I/O](#异步io)  
+- [Java I/O模型](#java-io模型)  
   - [同步阻塞IO](#同步阻塞io)  
   - [非阻塞式IO模型(NIO)](#非阻塞式io模型nio)  
 - [Java NIO核心组件](#java-nio核心组件)  
