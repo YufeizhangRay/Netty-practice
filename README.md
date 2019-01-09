@@ -19,7 +19,7 @@
   - [应用领域](#应用领域)
 - [Netty模型](#netty模型)  
 - [Netty基础概念](#netty基础概念)  
-  - [Netty核⼼组件](#netty核⼼组件)  
+  - [Netty的核⼼组件](#netty的核⼼组件)  
   - [Channel](#channel)  
   - [EventLoopGroup](#eventloopgroup)  
   - [ChannelPipeline](#channelpipeline)  
@@ -201,7 +201,7 @@ HTTP Tunnel :HTTP 通道的传输实现。
 In-VM Piple :JVM 内部的传输实现。  
 Protocol Support :协议支持。Netty 对于⼀些通用协议的编解码实现。例如:HTTP、 Redis、DNS 等等。  
    
-#### Netty核⼼组件  
+#### Netty的核⼼组件  
 Netty 有如下⼏个核心组件:  
 >Bootstrap & ServerBootstrap  
 Channel  
