@@ -5,38 +5,38 @@
 ### BIO/NIO/AIO 基础  
   
 #### 阻塞I/O  
-![]()  
+![](https://github.com/YufeizhangRay/image/blob/master/Netty/%E9%98%BB%E5%A1%9EIO.jpeg)  
   
 #### 非阻塞I/O  
-![]()  
+![](https://github.com/YufeizhangRay/image/blob/master/Netty/非阻塞IO.jpeg)  
   
 #### I/O复用  
-![]()  
+![](https://github.com/YufeizhangRay/image/blob/master/Netty/IO%E5%A4%8D%E7%94%A8.jpeg)  
   
 #### 信号驱动的I/O  
-![]()  
+![](https://github.com/YufeizhangRay/image/blob/master/Netty/%E4%BF%A1%E5%8F%B7%E9%A9%B1%E5%8A%A8IO.jpeg)  
   
 #### 异步I/O  
-![]()  
+![](https://github.com/YufeizhangRay/image/blob/master/Netty/%E5%BC%82%E6%AD%A5IO.jpeg)  
   
 ### Java I/O模型  
   
 #### 同步阻塞IO  
 1:1同步阻塞IO通信模型   
-![]()  
+![](https://github.com/YufeizhangRay/image/blob/master/Netty/%E5%90%8C%E6%AD%A5%E9%98%BB%E5%A1%9E%E6%A8%A1%E5%9E%8B.jpeg)  
   
 M:N形式的同步阻塞IO通信模型 
-![]()  
+![](https://github.com/YufeizhangRay/image/blob/master/Netty/MN%E5%90%8C%E6%AD%A5%E9%98%BB%E5%A1%9EIO.jpeg)  
   
 #### 非阻塞式IO模型(NIO)  
-NIO+单线程Reactor模式  
-![]()  
+NIO+单线程Reactor模型  
+![](https://github.com/YufeizhangRay/image/blob/master/Netty/%E5%8D%95%E7%BA%BF%E7%A8%8BReactor.jpeg)  
   
-NIO+多线程Reactor模式  
-![]()  
+NIO+多线程Reactor模型  
+![](https://github.com/YufeizhangRay/image/blob/master/Netty/%E5%A4%9A%E7%BA%BF%E7%A8%8BReactor.jpeg)  
   
-NIO+主从多线程Reactor模式  
-![]()  
+NIO+主从多线程Reactor模型  
+![](https://github.com/YufeizhangRay/image/blob/master/Netty/%E4%B8%BB%E4%BB%8EReactor.jpeg)  
   
 #### 总结  
 阻塞IO和非阻塞IO的区别就在于：应用程序的调用(等待数据准备阶段)是否立即返回！  
@@ -44,13 +44,12 @@ NIO+主从多线程Reactor模式
   
 再往深了说，可以去分析一下操作系统原理。  
 我们的应用在运行的时候，操作系统的内存是被分为两个区域的，一个是用户区，另一个是内核区。其中内核区是不允许轻易被应用进程所访问的。  
-![]()  
+![](https://github.com/YufeizhangRay/image/blob/master/Netty/%E4%BD%93%E7%B3%BB%E6%9E%B6%E6%9E%84.jpeg)  
   
 这样做的好处就是可以防止任意的外部应用程序直接访问内核态资源(机器的硬件等)，提高了安全性。  
-![]()  
+![](https://github.com/YufeizhangRay/image/blob/master/Netty/%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8.jpeg)  
   
-当一个IO发起时，我们的应用作为一个用户进程需要获取到计算机内核存储资源，但是又无法直接访问，于是可能会被挂起。此时会有一个内核区的内核进程去将硬件存储中的数据先拷贝到自己的进程空间中，然后再将数据传递给用户区中的应用进程。  
-![]()  
+当一个IO发起时，我们的应用作为一个用户进程需要获取到计算机内核存储资源，但是又无法直接访问，于是可能会被挂起。此时会有一个内核区的内核进程去将硬件存储中的数据先拷贝到自己的进程空间中，然后再将数据传递给用户区中的应用进程。   
   
 上述过程中，分为两个阶段  
 >1.内核进程将硬件存储中的数据拷贝到自己的进程空间(等待数据准备阶段)  
@@ -61,11 +60,11 @@ NIO+主从多线程Reactor模式
   
 ### Java NIO核心组件  
   
-![]()  
+![](https://github.com/YufeizhangRay/image/blob/master/Netty/NIO%E6%A0%B8%E5%BF%83%E7%BB%84%E4%BB%B6.jpeg)  
   
 #### Channel  
 Channel 也就是通道，底层封装了socket，可以和Buffer相连进行成块的数据传输。后面有详细介绍。  
-![]()  
+![](https://github.com/YufeizhangRay/image/blob/master/Netty/Buffer.jpeg)  
   
 >FileChannel  
 DatagramChannel  
@@ -79,39 +78,33 @@ position  现在数据写入的位置
 limit 数据读取的限制位置  
   
 刚开辟的buffer  
-![]()  
+![](https://github.com/YufeizhangRay/image/blob/master/Netty/%E5%BC%80%E8%BE%9Fbuffer.jpeg)  
   
 put()方法写入数据   
-![]()  
+![](https://github.com/YufeizhangRay/image/blob/master/Netty/%E5%86%99%E5%85%A5buffer.jpeg)  
   
 flip()方法，limit限制读取位置  
-![]()  
+![](https://github.com/YufeizhangRay/image/blob/master/Netty/%E8%AF%BB%E5%8F%96buffer.jpeg)  
   
 rewind()方法，可以读取未写区域  
-![]()  
+![](https://github.com/YufeizhangRay/image/blob/master/Netty/%E9%87%8D%E8%AF%BBbuffer.jpeg)  
   
 读写模型  
-![]()  
+![](https://github.com/YufeizhangRay/image/blob/master/Netty/%E8%AF%BB%E5%86%99%E6%A8%A1%E5%9E%8B.jpeg)  
   
 #### Selector  
 一个单线程的轮询选择器，感知已经准备就绪的事件。当客户端注册的感兴趣时间发生时，通知客户端进行操作，之后继续进行轮询检测。  
-![]()  
+![](https://github.com/YufeizhangRay/image/blob/master/Netty/selector.jpeg)  
   
-![]()  
+![](https://github.com/YufeizhangRay/image/blob/master/Netty/%E5%A4%9A%E8%B7%AF%E5%A4%8D%E7%94%A8.jpeg)  
   
 #### unsafe  
 NIO很多时候都不是通过JVM进行操作，大部分情况下会使用堆外内存(直接内存)。而Java是不可以直接操作这些资源，于是JDK提供了unsafe这个类去帮助我们操作底层的硬件。  
   
 ### Reactor模型  
   
-![]()  
-  
-![]()  
-  
-![]()  
-  
-#### Reactor模型的组件  
-Reactor:Reactor是IO事件的派发者(Selector)。  
+Reactor模型组件     
+>Reactor:Reactor是IO事件的派发者(Selector)。  
 Acceptor:Acceptor接受client连接，建立对应client的Handler，并向Reactor注册此Handler。  
 Handler:和一个client通讯的实体，按这样的过程实现业务的处理。  
   
@@ -127,20 +120,20 @@ Netty 是一种可以轻松快速的开发协议服务器和客户端网络应�
 5.自带协议栈，无需用户关心  
   
 #### 应用领域  
-![]()  
+![](https://github.com/YufeizhangRay/image/blob/master/Netty/%E5%BA%94%E7%94%A8%E9%A2%86%E5%9F%9F.jpeg)  
   
-1. 互联网领域:构建高性能RPC框架基础通信组件，阿里分布式服务框架 Dubbo 的 RPC 框架使用 Dubbo 协议进行节点间通信，Dubbo 协议默认使用 Netty 作为基础通信组件，用于实现各进程节点之间的内部通信。  
+>1. 互联网领域:构建高性能RPC框架基础通信组件，阿里分布式服务框架 Dubbo 的 RPC 框架使用 Dubbo 协议进行节点间通信，Dubbo 协议默认使用 Netty 作为基础通信组件，用于实现各进程节点之间的内部通信。  
 2. ⼤数据领域:经典的 Hadoop 的⾼性能通信和序列化组件 Avro 的 RPC 框架，默认采用 Netty 进⾏跨节点通信，它的 Netty Service 基于 Netty 框架二次封装实现。  
 3. 游戏行业:⽆论是手游服务端、还是大型的⽹络游戏，Java 语⾔得到了越来越⼴泛的应⽤。 Netty 作为高性能的基础通信组件，它本身提供了 TCP/UDP 和 HTTP 协议栈，非常⽅便定制和开发私有协议栈，账号登陆服务器、地图服务器之间可以方便的通过 Netty 进行⾼性能的通信。  
 4. 通信行业:Netty 的异步⾼性能、高可靠性和高成熟度的优点，使它在通信行业得到了⼤量的应用。  
   
 ### Netty模型  
-![]()  
+![](https://github.com/YufeizhangRay/image/blob/master/Netty/Netty%E6%A8%A1%E5%9E%8B.jpeg)  
   
 ### Netty基础概念  
   
 #### Netty架构图  
-![]()  
+![](https://github.com/YufeizhangRay/image/blob/master/Netty/Netty%E6%9E%B6%E6%9E%84%E5%9B%BE.jpeg)  
   
 >Core:核心部分，是底层的⽹络通⽤抽象和部分实现。  
 Extensible Event Model :可拓展的事件模型。Netty 是基于事件模型的网络应用框架。  
@@ -383,7 +376,7 @@ public class ClientHandler extends SimpleChannelInboundHandler<String> { //打�
 }
 ```
 ### Netty线程模型  
-![]()  
+![](https://github.com/YufeizhangRay/image/blob/master/Netty/Netty%E7%BA%BF%E7%A8%8B%E6%A8%A1%E5%9E%8B.jpeg)  
   
 ### 源码分析之ChannelHandler  
   
@@ -393,29 +386,30 @@ Channel
 Channel接口抽象了底层socket的一些状态属性以及调用方法，针对不同类型的socket提供不同的子类实现。  
    
 Channel生命周期  
-![]()  
+![](https://github.com/YufeizhangRay/image/blob/master/Netty/channel%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F.jpeg)  
   
 #### ChannelHandler  
-![]()  
+![](https://github.com/YufeizhangRay/image/blob/master/Netty/handler.jpeg)  
   
 ChannelHandler用于处理Channel对应的事件 ChannelHandler接口里面只定义了三个生命周期方法，我们主要实现它的子接口ChannelInboundHandler和ChannelOutboundHandler。为了便利，框架提供了 ChannelInboundHandlerAdapter，ChannelOutboundHandlerAdapter和ChannelDuplexHandler这三个适配类，在使用的时候只需要实现你关注的方法即可。  
   
 ChannelHandler生命周期方法  
-![]()  
+![](https://github.com/YufeizhangRay/image/blob/master/Netty/ChannelHandler%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E6%96%B9%E6%B3%95.jpeg)  
   
-ChannelHandler里面定义三个生命周期方法，分别会在当前ChannelHander加入ChannelHandlerContext中，从 ChannelHandlerContext中移除，以及ChannelHandler回调方法出现异常时被回调。  
-![]()  
+ChannelHandler里面定义三个生命周期方法，分别会在当前ChannelHander加入ChannelHandlerContext中，从 ChannelHandlerContext中移除，以及ChannelHandler回调方法出现异常时被回调。    
   
 #### ChannelInboundHandler
+![](https://github.com/YufeizhangRay/image/blob/master/Netty/ChannelInboundHandler.jpeg)  
+  
 介绍一下这些回调方法被触发的时机
-![]()  
+![](https://github.com/YufeizhangRay/image/blob/master/Netty/In%E8%A7%A6%E5%8F%91%E6%97%B6%E6%9C%BA.jpeg)  
   
 可以注意到每个方法都带了ChannelHandlerContext作为参数，具体作用是，在每个回调事件里面，处理完成之后，使用ChannelHandlerContext的fireChannelXXX方法来传递给下个ChannelHandler，netty的codec模块和业务处理代码分离就用到了这个链路处理。  
   
 #### ChannelOutboundHandler  
-![]()  
+![](https://github.com/YufeizhangRay/image/blob/master/Netty/ChannelOutboundHandler.jpeg)  
   
-![]()  
+![](https://github.com/YufeizhangRay/image/blob/master/Netty/Out%E8%A7%A6%E5%8F%91%E6%97%B6%E6%9C%BA.jpeg)  
   
 注意到一些回调方法有ChannelPromise这个参数，我们可以调用它的addListener注册监听，当回调方法所对应的操作完成后，会触发这个监听下面这个代码，会在写操作完成后触发，完成操作包括成功和失败。  
 ```
@@ -449,7 +443,7 @@ volatile AbstractChannelHandlerContext prev;
 ```
 每个ChannelHandlerContext之间形成双向链表。  
 #### ChannelPipeline  
-![]()  
+![](https://github.com/YufeizhangRay/image/blob/master/Netty/ChannelPipeline.jpeg)  
   
 在Channel创建的时候，会同时创建ChannelPipeline
 ```
@@ -486,9 +480,9 @@ protected DefaultChannelPipeline(Channel channel) {
 我们添加的自定义ChannelHandler会插入到head和tail之间，如果是ChannelInboundHandler的回调，根据插入的顺序从左向右进行链式调用，ChannelOutboundHandler则相反。  
   
 具体关系如下，但是下图没有把默认的head和tail画出来，这两个ChannelHandler做的工作相当重要。
-![]()  
+![](https://github.com/YufeizhangRay/image/blob/master/Netty/pipeline.jpeg)  
   
-![]()  
+![](https://github.com/YufeizhangRay/image/blob/master/Netty/%E7%AE%A1%E9%81%93.jpeg)  
   
 上面的整条链式的调用是通过Channel接口的方法直接触发的，如果使用ChannelContextHandler的接口方法间接触发，链路会从ChannelContextHandler对应的ChannelHandler开始，而不是从头或尾开始。  
 
@@ -539,9 +533,9 @@ protected void onUnhandledInboundMessage(Object msg) {
 强调一点的是，如果要执行整个链路，必须通过调用Channel方法触发，ChannelHandlerContext引用了 ChannelPipeline，所以也能间接操作channel的方法，但是会从当前ChannelHandlerContext绑定的 ChannelHandler作为起点开始，而不是ChannelHandlerContext的头和尾这个特性在不需要调用整个链路的情况下可以使用，可以增加一些效率。  
   
 上述组件之间的关系  
-![]()  
+![](https://github.com/YufeizhangRay/image/blob/master/Netty/Context.jpeg)  
   
-![]()  
+![](https://github.com/YufeizhangRay/image/blob/master/Netty/Context%E9%93%BE%E6%9D%A1.jpeg)  
   
 >1. 每个Channel会绑定一个ChannelPipeline，ChannelPipeline中也会持有Channel的引用  
 >2. ChannelPipeline持有ChannelHandlerContext链路，保留ChannelHandlerContext的头尾节点指针  
@@ -601,10 +595,10 @@ protected AbstractNioChannel(Channel parent, SelectableChannel ch, int readInter
     }
 }
 ```
-![]()  
+![](https://github.com/YufeizhangRay/image/blob/master/Netty/%E5%88%9B%E5%BB%BAChannel.jpeg)  
   
-整个流程涉及到 NioServerSocketChannel 的⽗父类们。类图如下  
-![]()  
+整个流程涉及到 NioServerSocketChannel 的父类们。类图如下  
+![](https://github.com/YufeizhangRay/image/blob/master/Netty/NioServerSocketChannel%E7%88%B6%E7%B1%BB%E4%BB%AC.jpeg)  
   
 >1.NioServerSocketChannel  
 2.AbstractNioMessageChannel  
@@ -828,11 +822,12 @@ protected void doBeginRead() throws Exception {
 ```
 这里 interestOps 为 op_read,上面在讲解 NioSocketChannel 的构造函数时候提到过。
 代码(5)如果当前是 op_accept 事件说明是服务器监听套接字获取到了一个链接套接字，如果是 op_read,则说明可 以读取客户端发来的数据了，如果是后者则会激活管线里面的所有 handler 的 channelRead 方法，这里会激活我们自定义的 NettyClientHandler 的 channelRead 读取客户端发来的数据，然后在向客户端写入数据。  
+![](https://github.com/YufeizhangRay/image/blob/master/Netty/connect%E6%B5%81%E7%A8%8B.jpeg)  
   
 ### Netty源码分析之服务端启动   
   
 #### bind:核⼼心流程  
-![]()  
+![](https://github.com/YufeizhangRay/image/blob/master/Netty/bind%E6%B5%81%E7%A8%8B.jpeg)  
                               
  >doBind()   
  >>initAndRegister   
@@ -853,7 +848,7 @@ abstract void init(Channel channel) throws Exception;
 #### 注册 Channel 到 EventLoopGroup  
   
 EventLoopGroup#register(Channel channel) ⽅法，注册 Channel 到 EventLoopGroup 中。整体流程如下:  
-![]()  
+![](https://github.com/YufeizhangRay/image/blob/master/Netty/%E6%B3%A8%E5%86%8C%E6%B5%81%E7%A8%8B.jpeg)  
   
 register:  
 AbstractUnsafe#register(EventLoop eventLoop, final ChannelPromise promise)方法开始校验传⼊的 eventLoop 参数⾮空。  
@@ -907,12 +902,12 @@ Reactor 的线程模型有三种:
 主从多线程模型  
   
 单线程模型  
-![]()  
+![](https://github.com/YufeizhangRay/image/blob/master/Netty/%E5%8D%95%E7%BA%BF%E7%A8%8B%E6%A8%A1%E5%9E%8B.jpeg)  
   
 所谓单线程,即 acceptor 处理和 handler 处理都在一个线程中处理. 这个模型的坏处显而易见: 当其中某个 handler 阻塞时, 会导致其他所有的 client 的 handler 都得不到执行, 并且更严重的是, handler 的阻塞也会导致整个服务不能接收新的 client 请求(因为 acceptor 也被阻塞了). 因为有这么多的缺陷, 因此单线程Reactor 模型用的比较少.  
   
 那么什么是多线程模型呢? Reactor 的多线程模型与单线程模型的区别就是 acceptor 是一个单独的线程处理, 并且有一组特定的 NIO 线程来负责各个客户端连接的 IO 操作.Reactor 多线程模型如下:  
-![]()  
+![](https://github.com/YufeizhangRay/image/blob/master/Netty/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E6%A8%A1%E5%9E%8B.jpeg)  
   
 Reactor 多线程模型有如下特点:
 >有专门一个线程, 即 Acceptor 线程用于监听客户端的TCP连接请求.  
@@ -920,7 +915,7 @@ Reactor 多线程模型有如下特点:
 客户端连接有很多, 但是 NIO 线程数是比较少的, 因此一个 NIO 线程可以同时绑定到多个客户端连接中.  
   
 接下来我们再来看一下 Reactor 的主从多线程模型. 一般情况下, Reactor 的多线程模式已经可以很好的工作了, 但是我们考虑一下如下情况: 如果我们的服务器需要同时处理大量的客户端连接请求或我们需要在客户端连接时, 进行一些权限的检查, 那么单线程的 Acceptor 很有可能就处理不过来, 造成了大量的客户端不能连接到服务器. Reactor 的主从多线程模型就是在这样的情况下提出来的, 它的特点是: 服务器端接收客户端的连接请求不再是一个线程, 而是由一个独立的线程池组成. 它的线程模型如下  
-![]()  
+![](https://github.com/YufeizhangRay/image/blob/master/Netty/%E4%B8%BB%E4%BB%8E%E5%A4%9A%E7%BA%BF%E7%A8%8B%E6%A8%A1%E5%9E%8B.jpeg)  
   
 可以看到, Reactor 的主从多线程模型和 Reactor 多线程模型很类似, 只不过 Reactor 的主从多线程模型的 acceptor 使用了线程池来处理大量的客户端请求.  
 
@@ -973,7 +968,7 @@ Netty 的服务器端的 acceptor 阶段, 没有使用到多线程, 因此上面
 服务器端的 ServerSocketChannel 只绑定到了 bossGroup 中的一个线程, 因此在调用 Java NIO 的 Selector.select 处理客户端的连接请求时, 实际上是在一个线程中的, 所以对只有一个服务的应用来说, bossGroup 设置多个线程是 没有什么作用的, 反而还会造成资源浪费.  
 
 #### NioEventLoopGroup类层次结构  
-![]()  
+![](https://github.com/YufeizhangRay/image/blob/master/Netty/NioEventLoopGroup%E7%B1%BB%E5%B1%82%E6%AC%A1%E7%BB%93%E6%9E%84.jpeg)  
   
 #### NioEventLoopGroup实例化过程
 >EventLoopGroup(其实是MultithreadEventExecutorGroup) 内部维护一个类型为 EventExecutor children 数组, 其大小是 nThreads, 这样就构成了一个线程池  
@@ -988,7 +983,7 @@ Selector selector 属性: NioEventLoop 构造器中通过调用通过 selector =
 NioEventLoop 继承于 SingleThreadEventLoop, 而 SingleThreadEventLoop 又继承于 SingleThreadEventExecutor. SingleThreadEventExecutor 是 Netty 中对本地线程的抽象, 它内部有一个 Thread thread 属性, 存储了一个本地 Java 线程. 因此我们可以认为, 一个 NioEventLoop 其实和一个特定的线程绑定, 并且 在其生命周期内, 绑定的线程都不会再改变.  
   
 #### NioEventLoop类层次结构  
-![]()  
+![](https://github.com/YufeizhangRay/image/blob/master/Netty/NioEventLoop%20%E7%B1%BB%E5%B1%82%E6%AC%A1%E7%BB%93%E6%9E%84.jpeg)  
         
  NioEventLoop 的类层次结构图还是比较复杂的, 不过我们只需要关注几个重要的点即可. 首先 NioEventLoop 的继
 链如承链如下:
@@ -1709,7 +1704,7 @@ private void fetchFromScheduledTaskQueue() {
 注意 , 因为 EventLoop 既需要执行 IO 操作, 又需要执行 task, 因此我们在调用 EventLoop.execute 方法提交任务时, 不要提交耗时任务, 更不能提交一些会造成阻塞的任务, 不然会导致我们的 IO 线程得不到调度, 影响整个程序的并发量.  
   
 #### 整体回顾    
-![]()  
+![](https://github.com/YufeizhangRay/image/blob/master/Netty/%E5%BE%AA%E7%8E%AF.jpeg)  
 ```
 1: @Override
 2: protected void run() {
