@@ -223,7 +223,7 @@ Channel与socket的关系
 在 Netty 中 Channel 有两种，对应客户端套接字通道 NioSocketChannel，内部管理 java.nio.channels.SocketChannel 套接字，对应服务器端 监听套接字通道 NioServerSocketChannel，其内部管理自己的 java.nio.channels.ServerSocketChannel 套接字。也就是 Channel 是对 socket 的装饰或者门面，其封装了对 socket 的原子操作。
   
 #### EventLoopGroup  
-Netty 之所以能提供高性能网络通讯，其中一个原因是因为它使用 Reactor 线程模型。在 netty 中每个 EventLoopGroup 本身是一个线程池，其中包含了自定义个数的 NioEventLoop，每个 NioEventLoop 是一个线程，并且每个 NioEventLoop 里面持有自己的 selector 选择器在Netty 中客户端持有一个 EventLoopGroup 用来处理网络 IO 操作，在服务器端持有两个 EventLoopGroup，其中 boss 组是专门用来接收客户端发来的 TCP 链接请求的，worker 组是专门用来具体处理完成三次握手的链接套接字的网络 IO 请求的。  
+Netty 之所以能提供高性能网络通讯，其中一个原因是因为它使用 Reactor 线程模型。在 netty 中每个 EventLoopGroup 本身是一个线程池，其中包含了自定义个数的 NioEventLoop，每个 NioEventLoop 是一个线程，并且每个 NioEventLoop 里面持有自己的 selector 选择器。在Netty 中客户端持有一个 EventLoopGroup 用来处理网络 IO 操作，在服务器端持有两个 EventLoopGroup，其中 boss 组是专门用来接收客户端发来的 TCP 链接请求的，worker 组是专门用来具体处理完成三次握手的链接套接字的网络 IO 请求的。  
   
 Channel与EventLoop的关系  
 Netty 中 NioEventLoop 是 EventLoop 的一个实现，每个 NioEventLoop 中会管理自己的一个 selector 选择器和监控选择器就绪事件的线程；每个 Channel 只会关联一个 NioEventLoop；  
@@ -252,7 +252,7 @@ Netty 中的 ChannelPipeline 类似于 Tomcat 容器中的 Filter 链，属于�
 ├── Server.java -- 服务端启动类 ├── ServerHandler.java -- 服务端逻辑处理理类 ├── ServerInitializer.java -- 服务端初始化类
 ```
 #### 服务端  
-⾸首先是编写服务端的启动类。 
+首先是编写服务端的启动类。 
 ```
 1  public final class Server {
 2    public static void main(String[] args) throws Exception { //Configure the server  
@@ -319,7 +319,7 @@ public class ServerInitializer extends ChannelInitializer<SocketChannel> {
   }
 }
 ```
-服务相关的设置的代码写完之后，我们再来编写主要的业务代码。使⽤用Netty编写业务层的代码，我们需要继承 ChannelInboundHandlerAdapter 或 SimpleChannelInboundHandler 类，在这里顺便说下它们两的区别吧。继承 SimpleChannelInboundHandler 类之后，会在接收到数据后自动 release 掉数据占⽤的 Bytebuffer 资源。并且继承该类需要指定数据格式。而继承ChannelInboundHandlerAdapter 则不会⾃动释放，需要⼿动调用 ReferenceCountUtil.release() 等方法进行释放。继承该类不需要指定数据格式。所以在这⾥，个人推荐服务端继承 ChannelInboundHandlerAdapter ，手动进⾏释放，防止数据未处理完就自动释放了。而且服务端可能有多个客户端进行连接，并且每一个客户端请求的数据格式都不一致，这时便可以进⾏相应的处理。客户端根据情况可以继承 SimpleChannelInboundHandler 类。好处是直接指定好传输的数据格式，就不需要再进行格式的转换了。  
+服务相关的设置的代码写完之后，我们再来编写主要的业务代码。使⽤Netty编写业务层的代码，我们需要继承 ChannelInboundHandlerAdapter 或 SimpleChannelInboundHandler 类，在这里顺便说下它们两的区别吧。继承 SimpleChannelInboundHandler 类之后，会在接收到数据后自动 release 掉数据占⽤的 Bytebuffer 资源。并且继承该类需要指定数据格式。而继承ChannelInboundHandlerAdapter 则不会⾃动释放，需要⼿动调用 ReferenceCountUtil.release() 等方法进行释放。继承该类不需要指定数据格式。所以在这⾥，个人推荐服务端继承 ChannelInboundHandlerAdapter ，手动进⾏释放，防止数据未处理完就自动释放了。而且服务端可能有多个客户端进行连接，并且每一个客户端请求的数据格式都不一致，这时便可以进⾏相应的处理。客户端根据情况可以继承 SimpleChannelInboundHandler 类。好处是直接指定好传输的数据格式，就不需要再进行格式的转换了。  
 ```
 @Sharable
 public class ServerHandler extends SimpleChannelInboundHandler<String>{
@@ -487,7 +487,7 @@ ChannelInboundHandler和ChannelOutboundHandler的区别
 区别主要在于ChannelInboundHandler的channelRead和channelReadComplete回调和 ChannelOutboundHandler的write和flush回调上，ChannelOutboundHandler的channelRead回调负责执行入栈数据的decode逻辑，ChannelOutboundHandler的write负责执行出站数据的encode工作。其他回调方法和具 体触发逻辑有关，和in与out无关。  
   
 #### ChannelHandlerContext  
-每个ChannelHandler通过add方法加入到ChannelPipeline中去的时候，会创建一个对应的 ChannelHandlerContext，并且绑定，ChannelPipeline实际维护的是ChannelHandlerContext 的关系在 DefaultChannelPipeline源码中可以看到会保存第一个ChannelHandlerContext以及最后一个ChannelHandlerContext的引用。  
+每个ChannelHandler通过add方法加入到ChannelPipeline中去的时候，会创建一个对应的 ChannelHandlerContext，并且绑定，ChannelPipeline实际维护的是ChannelHandlerContext 的关系。在 DefaultChannelPipeline源码中可以看到会保存第一个ChannelHandlerContext以及最后一个ChannelHandlerContext的引用。  
 ```
 final AbstractChannelHandlerContext head;
 final AbstractChannelHandlerContext tail;
