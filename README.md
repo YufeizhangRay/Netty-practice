@@ -701,7 +701,8 @@ final ChannelFuture initAndRegister() {
     try {
     //(1.1)
     channel = channelFactory.newChannel();
-    //(1.2) init(channel);          
+    //(1.2) 
+    init(channel);          
     } catch (Throwable t) {
         ...
     }
@@ -852,14 +853,16 @@ private void processSelectedKey(SelectionKey k, AbstractNioChannel ch) {
         } 
         //4
         if ((readyOps & SelectionKey.OP_WRITE) != 0) {
-            ch.unsafe().forceFlush(); }
+            ch.unsafe().forceFlush(); 
+        }
         //5
         if ((readyOps & (SelectionKey.OP_READ | SelectionKey.OP_ACCEPT)) != 0 || readyOps == 0) {
             unsafe.read(); 
         }
     } catch (CancelledKeyException ignored) {
-        unsafe.close(unsafe.voidPromise()); }
+        unsafe.close(unsafe.voidPromise()); 
     }
+}
 ```                                   
 代码(3)如果当前事件 key 为 op_connect 则去掉 op_connect，然后调用 NioSocketChannel 的 doFinishConnect:
 ```
@@ -914,7 +917,7 @@ AbstractUnsafe#register(EventLoop eventLoop, final ChannelPromise promise)方法
 调⽤ #isRegistered() 方法。  
   
 register0  
-#register0(ChannelPromise promise) 方法中调用doregister()方法。doregister()方法中包含了register(Selector sel, int ops, Object att)方法。   
+#register0(ChannelPromise promise) 方法中调用doRegister()方法。doRegister()方法中包含了register(Selector sel, int ops, Object att)方法。   
 SelectableChannel#register(Selector sel, int ops, Object att) ⽅法，注册 Java 原生 NIO 的 Channel 对象到 Selector 对象上。但是为什么感兴趣的事件是为 0 呢？正常情况下，对于服务端来说，需要注册 SelectionKey.OP_ACCEPT 事件。  
 >1.注册方式是多态的，它既可以被 NIOServerSocketChannel 用来监听客户端的连接入，也可以注册 SocketChannel ⽤来监听⽹络读或者写操作。  
 2.通过 SelectionKey#interestOps(int ops) ⽅法可以⽅便地修改监听操作位。所以此处注册需要获取 SelectionKey 并给 AbstractNIOChannel 的成员变量量 selectionKey 赋值。    
@@ -1269,14 +1272,14 @@ public class NioEchoServer {
  
 ```
  
-还记得不, 上面操作的第一步 通过 Selector.open() 打开一个 Selector 我们已经在第一章的 Channel 实例化这一小节中已经提到了, Netty 中是通过调用 SelectorProvider.openSocketChannel() 来打开一个新的 Java NIO SocketChannel:
+上面操作的第一步，通过 Selector.open() 打开一个 Selector, 已经在之前提到了, Netty 中是通过调用 SelectorProvider.openSocketChannel() 来打开一个新的 Java NIO SocketChannel:
 ```
 private static SocketChannel newSocket(SelectorProvider provider) {
     ...
     return provider.openSocketChannel();
 }
 ```
-第二步 将 Channel 注册到 Selector 中, 并设置需要监听的事件(interest set) 的操作我们在第一章 channel 的注 册过程 中也分析过了, 我们在来回顾一下, 在客户端的 Channel 注册过程中, 会有如下调用链:
+第二步将 Channel 注册到 Selector 中, 并设置需要监听的事件(interest set) 的操作我们在 channel 的注册过程中也分析过了, 我们在来回顾一下, 在客户端的 Channel 注册过程中, 会有如下调用链:
 ```
 Bootstrap.initAndRegister ->
     AbstractBootstrap.initAndRegister ->
@@ -1291,7 +1294,8 @@ Bootstrap.initAndRegister ->
 @Override
 public final void register(EventLoop eventLoop, final ChannelPromise promise) {
     // 省略条件判断和错误处理 
-    AbstractChannel.this.eventLoop = eventLoop; register0(promise);
+    AbstractChannel.this.eventLoop = eventLoop; 
+    register0(promise);
 }
 ```
 register0 方法代码如下:
@@ -1396,7 +1400,7 @@ void selectNow() throws IOException {
     } finally {
         // restore wakup state if needed
         if (wakenUp.get()) {
-        selector.wakeup();
+            selector.wakeup();
         }
     } 
 }
