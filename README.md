@@ -1519,13 +1519,6 @@ private static void processSelectedKey(SelectionKey k, AbstractNioChannel ch) {
                 return;
             }
         }
-        if ((readyOps & (SelectionKey.OP_READ | SelectionKey.OP_ACCEPT)) != 0 || readyOps == 0) {
-            unsafe.read();
-            if (!ch.isOpen()) {
-                // Connection already closed - no need to handle write.
-                return; 
-            }
-        }
         // 可写事件
         if ((readyOps & SelectionKey.OP_WRITE) != 0) {
             // Call forceFlush which will also take care of clear the OP_WRITE once there is nothing left to write
@@ -1599,12 +1592,12 @@ public final void read() {
     } 
 }
 ```
-read() 源码比较长, 我为了篇幅起见, 删除了部分代码, 只留下了主干. 不过我建议读者朋友们自己一定要看一下 read() 源码, 这对理解 Netty 的 EventLoop 十分有帮助. 上面 read 方法其实归纳起来, 可以认为做了如下工作:
+read() 源码比较长, 我为了篇幅起见, 删除了部分代码, 只留下了主干. read 方法其实归纳起来, 可以认为做了如下工作:
 >1. 分配 ByteBuf  
 >2. 从 SocketChannel 中读取数据  
 >3. 调用 pipeline.fireChannelRead 发送一个 inbound 事件.  
   
-前面两点没什么好说的, 第三点 pipeline.fireChannelRead 读者朋友们看到了有没有会心一笑地感觉呢? 反正我看到这里时是有的.   pipeline.fireChannelRead 是 inbound 事件起点. 当调用了 pipeline.fireIN_EVT() 后, 那么就产生了一 个 inbound 事件, 此事件会以 head -> customContext -> tail 的方向依次流经 ChannelPipeline 中的各个 handler. 调用了 pipeline.fireChannelRead 后, 就是 ChannelPipeline 中所需要做的工作了.    
+pipeline.fireChannelRead 是 inbound 事件起点. 当调用了 pipeline.fireIN_EVT() 后, 那么就产生了一 个 inbound 事件, 此事件会以 head -> customContext -> tail 的方向依次流经 ChannelPipeline 中的各个 handler. 调用了 pipeline.fireChannelRead 后, 就是 ChannelPipeline 中所需要做的工作了.    
   
 OP_WRITE 处理  
 OP_WRITE 可写事件代码如下. 这里代码比较简单, 没有详细分析的必要了.  
@@ -1631,7 +1624,7 @@ OP_CONNECT 事件的处理中, 只做了两件事情:
 >1. 正如代码中的注释所言, 我们需要将 OP_CONNECT 从就绪事件集中清除, 不然会一直有 OP_CONNECT 事件.  
 >2. 调用 unsafe.finishConnect() 通知上层连接已建立.  
   
-unsafe.finishConnect() 调用最后会调用到 pipeline().fireChannelActive(), 产生一个 inbound 事件, 通知 pipeline 中的各个 handler TCP 通道已建立(即 ChannelInboundHandler.channelActive 方法会被调用) 到了这里, 我们整个 NioEventLoop 的 IO 操作部分已经了解完了, 接下来的一节我们要重点分析一下 Netty 的任务队列机制.  
+unsafe.finishConnect() 调用最后会调用到 pipeline().fireChannelActive(), 产生一个 inbound 事件, 通知 pipeline 中的各个 handler TCP 通道已建立(即 ChannelInboundHandler.channelActive 方法会被调用) 到了这里, 整个 NioEventLoop 的 IO 操作部分已经了解完了.
 
 ### 源码分析之任务队列机制  
 我们已经提到过, 在Netty 中, 一个 NioEventLoop 通常需要肩负起两种任务, 第一个是作为 IO 线程, 处理 IO 操作; 第二个就是作为任务线程, 处理 taskQueue 中的任务. 这一节的重点就是分析一下 NioEventLoop 的任务队列机制的.  
