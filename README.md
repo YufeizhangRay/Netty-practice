@@ -227,7 +227,7 @@ Netty 之所以能提供高性能网络通讯，其中一个原因是因为它�
   
 Channel与EventLoop的关系  
 Netty 中 NioEventLoop 是 EventLoop 的一个实现，每个 NioEventLoop 中会管理自己的一个 selector 选择器和监控选择器就绪事件的线程；每个 Channel 只会关联一个 NioEventLoop；  
-当 Channel 是客户端通道 NioSocketChannel 时候，会注册 NioSocketChannel 管理的 SocketChannel 实例到自己关联的 NioEventLoop 的 selector 选择器上，然后 NioEventLoop 对应的线程会通过 select 命令监控感兴趣的网络读写事件。当Channel是服务端通道 NioServerSocketChannel 时候，NioServerSocketChannel 本身会被注册到 boss EventLoopGroup 里面的某一个 NioEventLoop 管理的 selector 选择器上，而完成三次握手 的链接套接字是被注册到了 worker EventLoopGroup 里面的某一个 NioEventLoop 管理的 selector 选择器上；需要注意是多个 Channel 可以注册到同一个 NioEventLoop 管理的 selector 选择器上，这时候 NioEventLoop 对应的单个线程就可以处理多个 Channel 的就绪事件；但是每个 Channel 只能注册到一个固定的 NioEventLoop 管理的 selector 选择器上。  
+当 Channel 是客户端通道 NioSocketChannel 时候，会注册 NioSocketChannel 管理的 SocketChannel 实例到自己关联的 NioEventLoop 的 selector 选择器上，然后 NioEventLoop 对应的线程会通过 select 命令监控感兴趣的网络读写事件。当Channel是服务端通道 NioServerSocketChannel 时候，NioServerSocketChannel 本身会被注册到 boss EventLoopGroup 里面的某一个 NioEventLoop 管理的 selector 选择器上，而完成三次握手的链接套接字是被注册到了 worker EventLoopGroup 里面的某一个 NioEventLoop 管理的 selector 选择器上；需要注意是多个 Channel 可以注册到同一个 NioEventLoop 管理的 selector 选择器上，这时候 NioEventLoop 对应的单个线程就可以处理多个 Channel 的就绪事件；但是每个 Channel 只能注册到一个固定的 NioEventLoop 管理的 selector 选择器上。  
   
 >一个 EventLoopGroup 包含⼀个或多个 EventLoop ，即 EventLoopGroup : EventLoop = 1 : n。  
 一个 EventLoop 在它的生命周期内，只能与⼀个 Thread 绑定，即 EventLoop : Thread = 1 : 1。  
@@ -238,7 +238,7 @@ Netty 中 NioEventLoop 是 EventLoop 的一个实现，每个 NioEventLoop 中�
 当一个连接到达时，Netty 就会创建一个 Channel，然后从 EventLoopGroup 中分配⼀个 EventLoop 来给这个 Channel 绑定上，在该 Channel 的整个生命周期中都是有这个绑定的 EventLoop 来服务的。  
   
 #### ChannelPipeline
-Netty 中的 ChannelPipeline 类似于 Tomcat 容器中的 Filter 链，属于设计模式中的责任链模式，其中链上的每个节点 就是一个 ChannelHandler。在 netty 中每个 Channel 有属 于自己的 ChannelPipeline，对从 Channel 中读取或者要写 入 Channel 中的数据进行依次处理。  
+Netty 中的 ChannelPipeline 类似于 Tomcat 容器中的 Filter 链，属于设计模式中的责任链模式，其中链上的每个节点 就是一个 ChannelHandler。在 netty 中每个 Channel 有属于自己的 ChannelPipeline，对从 Channel 中读取或者要写入 Channel 中的数据进行依次处理。  
 需要注意一点是虽然每个 Channel(更底层说是每个 socket)有自己的 ChannelPipeline，但是每个 ChannelPipeline 里面可以复用一个 ChannelHandler。   
 ### Netty示例分析   
    
@@ -246,7 +246,7 @@ Netty 中的 ChannelPipeline 类似于 Tomcat 容器中的 Filter 链，属于�
 ```
 结构:  
 ├── client   
-├── Client.java -- 客户端启动类 ├── ClientHandler.java -- 客户端逻辑处理理类 ├── ClientHandler.java -- 客户端初始化类 
+├── Client.java -- 客户端启动类 ├── ClientHandler.java -- 客户端逻辑处理理类 ├── ClientInitializer.java -- 客户端初始化类 
 
 ├── server 
 ├── Server.java -- 服务端启动类 ├── ServerHandler.java -- 服务端逻辑处理理类 ├── ServerInitializer.java -- 服务端初始化类
@@ -290,7 +290,7 @@ Netty 中的 ChannelPipeline 类似于 Tomcat 容器中的 Filter 链，属于�
   
 >第10⾏: 创建 ServerBootstrap 对象，⽤于设置服务端的启动配置。  
 第11⾏: 调⽤ #group(EventLoopGroup parentGroup, EventLoopGroup childGroup) 方法，设置使用的 EventLoopGroup 。  
-第14行: 调⽤ #channel(Class<? extends C> channelClass) ⽅法，设置要被实例化的 Channel 为 NioServerSocketChannel 类。在下⽂中，我们会看到该 Channel 内嵌了java.nio.channels.ServerSocketChannel 对象。  
+第14行: 调⽤ #channel(Class<? extends C> channelClass) ⽅法，设置要被实例化的 Channel 为 NioServerSocketChannel 类。
 第16行: 调用 #handler(ChannelHandler handler) 方法，设置 NioServerSocketChannel 的处理器。在本示例中，使用了
 io.netty.handler.logging.LoggingHandler 类，用于打印服务端的每个事件。  
 第18⾏: 调用 #childHandler(ChannelHandler handler) ⽅法，设置连⼊服务端的 Client 的 SocketChannel 的处理器。在本示例中，使用 ServerInitializer() 来初始化连入服务端的 Client 的 SocketChannel 的处理器。  
@@ -447,7 +447,7 @@ Channel生命周期
 #### ChannelHandler  
 ![](https://github.com/YufeizhangRay/image/blob/master/Netty/handler.jpeg)  
   
-ChannelHandler用于处理Channel对应的事件 ChannelHandler接口里面只定义了三个生命周期方法，我们主要实现它的子接口ChannelInboundHandler和ChannelOutboundHandler。为了便利，框架提供了 ChannelInboundHandlerAdapter，ChannelOutboundHandlerAdapter和ChannelDuplexHandler这三个适配类，在使用的时候只需要实现你关注的方法即可。  
+ChannelHandler用于处理Channel对应的事件，ChannelHandler接口里面只定义了三个生命周期方法，我们主要实现它的子接口ChannelInboundHandler和ChannelOutboundHandler。为了便利，框架提供了 ChannelInboundHandlerAdapter，ChannelOutboundHandlerAdapter和ChannelDuplexHandler这三个适配类，在使用的时候只需要实现你关注的方法即可。  
   
 ChannelHandler生命周期方法  
 ![](https://github.com/YufeizhangRay/image/blob/master/Netty/ChannelHandler%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E6%96%B9%E6%B3%95.jpeg)  
@@ -484,7 +484,7 @@ public void write(ChannelHandlerContext ctx, Object msg, ChannelPromise promise)
 ```
 ChannelInboundHandler和ChannelOutboundHandler的区别  
   
-区别主要在于ChannelInboundHandler的channelRead和channelReadComplete回调和 ChannelOutboundHandler的write和flush回调上，ChannelOutboundHandler的channelRead回调负责执行入栈数据的decode逻辑，ChannelOutboundHandler的write负责执行出站数据的encode工作。其他回调方法和具 体触发逻辑有关，和in与out无关。  
+区别主要在于ChannelInboundHandler的channelRead和channelReadComplete回调，以及 ChannelOutboundHandler的write和flush回调上，ChannelOutboundHandler的channelRead回调负责执行入栈数据的decode逻辑，ChannelOutboundHandler的write负责执行出站数据的encode工作。其他回调方法和具体触发逻辑有关，和in与out无关。  
   
 #### ChannelHandlerContext  
 每个ChannelHandler通过add方法加入到ChannelPipeline中去的时候，会创建一个对应的 ChannelHandlerContext，并且绑定，ChannelPipeline实际维护的是ChannelHandlerContext 的关系。在 DefaultChannelPipeline源码中可以看到会保存第一个ChannelHandlerContext以及最后一个ChannelHandlerContext的引用。  
@@ -547,33 +547,33 @@ HeadContext实现了ChannelOutboundHandler，ChannelInboundHandler这两个接�
 ```
 class HeadContext extends AbstractChannelHandlerContext implements ChannelOutboundHandler, ChannelInboundHandler
 ```
-因为在头部，所以说HeadContext中关于in和out的回调方法都会触发 关于ChannelInboundHandler， HeadContext的作用是进行一些前置操作，以及把事件传递到下一个ChannelHandlerContext的 ChannelInboundHandler中去看下其中channelRegistered的实现。
+因为在头部，所以说HeadContext中关于in和out的回调方法都会触发 关于ChannelInboundHandler， HeadContext的作用是进行一些前置操作，以及把事件传递到下一个ChannelHandlerContext的 ChannelInboundHandler中。去看下其中channelRegistered的实现。
 ```
  public void channelRegistered(ChannelHandlerContext ctx) throws Exception {
     invokeHandlerAddedIfNeeded();
     ctx.fireChannelRegistered();
 }
 ```
-从语义上可以看出来在把这个事件传递给下一个ChannelHandler之前会回调ChannelHandler的handlerAdded方法而有关ChannelOutboundHandler接口的实现，会在链路的最后执行，看下write方法的实现。
+从语义上可以看出来在把这个事件传递给下一个ChannelHandler之前会回调ChannelHandler的handlerAdded方法而有关ChannelOutboundHandler接口的实现，会在链路的最后执行。看下write方法的实现。
 ```
 public void write(ChannelHandlerContext ctx, Object msg, ChannelPromise promise) throws Exception {
     unsafe.write(msg, promise);
 }
 ```
-这边的unsafe接口封装了底层Channel的调用，之所以取名为unsafe，是不需要用户手动去调用这些方法。这个和阻塞原语的unsafe不是同一个也就是说，当我们通过Channel接口执行write之后，会执行 ChannelOutboundHandler链式调用，在链尾的HeadContext ，在通过unsafe回到对应Channel做相关调用。
+这边的unsafe接口封装了底层Channel的调用，之所以取名为unsafe，是不需要用户手动去调用这些方法。这个和阻塞原语的unsafe不是同一个也就是说，当我们通过Channel接口执行write之后，会执行 ChannelOutboundHandler链式调用。在链尾的HeadContext ，通过unsafe回到对应Channel做相关调用。
 ```
 public ChannelFuture write(Object msg) {
     return pipeline.write(msg);
 }
 ```
 TailContext  
-TailContext实现了ChannelInboundHandler接口，会在ChannelInboundHandler调用链最后执行，只要是对调用链完成处理的情况进行处理，看下channelRead实现。
+TailContext实现了ChannelInboundHandler接口，会在ChannelInboundHandler调用链最后执行，只要是对调用链完成处理的情况进行处理。看下channelRead实现。
 ```
 public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
     onUnhandledInboundMessage(msg);
 }
 ```
-如果我们自定义的最后一个ChannelInboundHandler，也把处理操作交给下一个ChannelHandler，那么就会到 TailContext，在TailContext会提供一些默认处理
+如果我们自定义的最后一个ChannelInboundHandler，也把处理操作交给下一个ChannelHandler，那么就会到 TailContext，在TailContext会提供一些默认处理。
 ```
 protected void onUnhandledInboundMessage(Object msg) {
     try {
@@ -1000,7 +1000,7 @@ public ServerBootstrap group(EventLoopGroup group) {
     return group(group, group);
 }
 ```
-因此当传入一个 group 时, 那么 bossGroup 和 workerGroup 就是同一个 NioEventLoopGroup 了. 这时候呢, 因为 bossGroup 和 workerGroup 就是同一个 NioEventLoopGroup, 并且这个 NioEventLoopGroup 只有一个线程, 这 样就会导致 Netty 中的 acceptor 和后续的所有客户端连接的 IO 操作都是在一个线程中处理的. 那么对应到 Reactor 的线程模型中, 我们这样设置 NioEventLoopGroup 时, 就相当于 Reactor 单线程模型.  
+因此当传入一个 group 时, 那么 bossGroup 和 workerGroup 就是同一个 NioEventLoopGroup 了. 这时候呢, 因为 bossGroup 和 workerGroup 就是同一个 NioEventLoopGroup, 并且这个 NioEventLoopGroup 只有一个线程, 这样就会导致 Netty 中的 acceptor 和后续的所有客户端连接的 IO 操作都是在一个线程中处理的. 那么对应到 Reactor 的线程模型中, 我们这样设置 NioEventLoopGroup 时, 就相当于 Reactor 单线程模型.  
   
 多线程模型   
 同理, 再来看一下下面的例子: 
@@ -1025,9 +1025,9 @@ b.group(bossGroup, workerGroup)
 ```
 bossGroup 线程池中的线程数我们设置为4, 而 workerGroup 中的线程是 CPU 核心数乘以2, 因此对应的到 Reactor 线程模型中, 我们知道, 这样设置的 NioEventLoopGroup 其实就是 Reactor 主从多线程模型.  
   
-Netty 的服务器端的 acceptor 阶段, 没有使用到多线程, 因此上面的 主从多线程模型 在 Netty 的服务器端是不存在的.  
+Netty 的服务器端的 acceptor 阶段, 没有使用到多线程, 因此上面的主从多线程模型在 Netty 的服务器端是不存在的.  
   
-服务器端的 ServerSocketChannel 只绑定到了 bossGroup 中的一个线程, 因此在调用 Java NIO 的 Selector.select 处理客户端的连接请求时, 实际上是在一个线程中的, 所以对只有一个服务的应用来说, bossGroup 设置多个线程是 没有什么作用的, 反而还会造成资源浪费.  
+服务器端的 ServerSocketChannel 只绑定到了 bossGroup 中的一个线程, 因此在调用 Java NIO 的 Selector.select 处理客户端的连接请求时, 实际上是在一个线程中的, 所以对只有一个服务的应用来说, bossGroup 设置多个线程是没有什么作用的, 反而还会造成资源浪费.  
   
 #### NioEventLoopGroup  
   
@@ -1036,7 +1036,7 @@ Netty 的服务器端的 acceptor 阶段, 没有使用到多线程, 因此上面
   
 #### NioEventLoopGroup实例化过程
 >EventLoopGroup(其实是MultithreadEventExecutorGroup) 内部维护一个类型为 EventExecutor children 数组, 其大小是 nThreads, 这样就构成了一个线程池  
-如果我们在实例化 NioEventLoopGroup 时, 如果指定线程池大小, 则 nThreads 就是指定的值, 反之是处理器 核心数 * 2  
+如果我们在实例化 NioEventLoopGroup 时, 如果指定线程池大小, 则 nThreads 就是指定的值, 反之是处理器核心数 * 2  
 MultithreadEventExecutorGroup 中会调用 newChild 抽象方法来初始化 children 数组  
 抽象方法 newChild 是在 NioEventLoopGroup 中实现的, 它返回一个 NioEventLoop 实例.  
 NioEventLoop 属性:  
@@ -1044,13 +1044,12 @@ SelectorProvider provider 属性: NioEventLoopGroup 构造器中通过 SelectorP
 Selector selector 属性: NioEventLoop 构造器中通过调用通过 selector = provider.openSelector() 获取一个 selector 对象.  
   
 #### NioEventLoop  
-NioEventLoop 继承于 SingleThreadEventLoop, 而 SingleThreadEventLoop 又继承于 SingleThreadEventExecutor. SingleThreadEventExecutor 是 Netty 中对本地线程的抽象, 它内部有一个 Thread thread 属性, 存储了一个本地 Java 线程. 因此我们可以认为, 一个 NioEventLoop 其实和一个特定的线程绑定, 并且 在其生命周期内, 绑定的线程都不会再改变.  
+NioEventLoop 继承于 SingleThreadEventLoop, 而 SingleThreadEventLoop 又继承于 SingleThreadEventExecutor. SingleThreadEventExecutor 是 Netty 中对本地线程的抽象, 它内部有一个 Thread thread 属性, 存储了一个本地 Java 线程. 因此我们可以认为, 一个 NioEventLoop 其实和一个特定的线程绑定, 并且在其生命周期内, 绑定的线程都不会再改变.  
   
 #### NioEventLoop类层次结构  
 ![](https://github.com/YufeizhangRay/image/blob/master/Netty/NioEventLoop%20%E7%B1%BB%E5%B1%82%E6%AC%A1%E7%BB%93%E6%9E%84.jpeg)  
         
- NioEventLoop 的类层次结构图还是比较复杂的, 不过我们只需要关注几个重要的点即可. 首先 NioEventLoop 的继
-链如承链如下:
+ NioEventLoop 的类层次结构图还是比较复杂的, 不过我们只需要关注几个重要的点即可. 首先 NioEventLoop 的继链如承链如下:
 ```
 NioEventLoop -> SingleThreadEventLoop -> SingleThreadEventExecutor -> AbstractScheduledEventExecutor
 ```
@@ -1185,7 +1184,7 @@ public void execute(Runnable task) {
   
 ### 源码分析之IO处理循环  
 接下来我们先从 IO 操纵方面入手, 看一下 TCP 数据是如何从 Java NIO Socket 传递到我们的 handler 中的.  
-Netty 是 Reactor 模型的一个实现, 并且是基于 Java NIO 的, 那么从 Java NIO 的前生今世 之四 NIO Selector 详解 中我们知道, Netty 中必然有一个 Selector 线程, 用于不断调用 Java NIO 的 Selector.select 方法, 查询当前是否有就绪的 IO 事件. 回顾一下在 Java NIO 中所讲述的 Selector 的使用流程:  
+Netty 是 Reactor 模型的一个实现, 并且是基于 Java NIO 的, 那么 Netty 中必然有一个 Selector 线程, 用于不断调用 Java NIO 的 Selector.select 方法, 查询当前是否有就绪的 IO 事件. Selector 的使用流程:  
 >1. 通过 Selector.open() 打开一个 Selector.  
 >2. 将 Channel 注册到 Selector 中, 并设置需要监听的事件(interest set)  
 >3. 不断重复:  
@@ -1193,9 +1192,10 @@ Netty 是 Reactor 模型的一个实现, 并且是基于 Java NIO 的, 那么从
 调用 selector.selectedKeys() 获取 selected keys   
 迭代每个 selected key:  
 >>>从 selected key 中获取 对应的 Channel 和附加信息(如果有的话)  
-判断是哪些 IO 事件已经就绪了, 然后处理它们. 如果是 OP_ACCEPT 事件, 则调用 "SocketChannel clientChannel = ((ServerSocketChannel) key.channel()).accept()" 获取 SocketChannel, 并将它 设置为 非阻塞的, 然后将这个 Channel 注册到 Selector 中.   
+判断是哪些 IO 事件已经就绪了, 然后处理它们. 如果是 OP_ACCEPT 事件, 则调用 "SocketChannel clientChannel = ((ServerSocketChannel) key.channel()).accept()" 获取 SocketChannel, 并将它设置为非阻塞的, 然后将这个 Channel 注册到 Selector 中.   
 根据需要更改 selected key 的监听事件.  
 将已经处理过的 key 从 selected keys 集合中删除.  
+  
 上面的使用流程用代码来体现就是:  
   
 ```
@@ -1325,7 +1325,7 @@ protected void doRegister() throws Exception {
 在这里 javaChannel() 返回的是一个 Java NIO SocketChannel 对象, 我们将此 SocketChannel 注册到前面第一步获取的 Selector 中.
   
 #### thread的run循环  
-在 EventLoop 的启动 一小节中, 我们已经了解到了, 当 EventLoop.execute 第一次被调用时, 就会触发 startThread() 的调用, 进而导致了 EventLoop 所对应的 Java 线程的启动. 接着我们来更深入一些, 来看一下此线程启动后都会做什么东东吧. 下面是此线程的 run() 方法, 我已经把一些异常处理和收尾工作的代码都去掉了. 这个 run 方法可以说是十分简单, 主要就是调用了 SingleThreadEventExecutor.this.run() 方法. 而 SingleThreadEventExecutor.run() 是一个抽象方法, 它的实现在 NioEventLoop 中.  
+在 EventLoop 的启动中, 我们已经了解到了, 当 EventLoop.execute 第一次被调用时, 就会触发 startThread() 的调用, 进而导致了 EventLoop 所对应的 Java 线程的启动. 接着我们来更深入一些, 来看一下此线程启动后都会做什么东东吧. 下面是此线程的 run() 方法, 我已经把一些异常处理和收尾工作的代码都去掉了. 这个 run 方法可以说是十分简单, 主要就是调用了 SingleThreadEventExecutor.this.run() 方法. 而 SingleThreadEventExecutor.run() 是一个抽象方法, 它的实现在 NioEventLoop 中.  
 ```
 thread = threadFactory.newThread(new Runnable() {
     @Override
@@ -1382,7 +1382,7 @@ protected void run() {
     }
 }
 ```  
-看到了上面代码的 for(;;) 所构成的死循环了没? 原来 NioEventLoop 事件循环的核心就是这里! 现在我们把上 面所提到的 Selector 使用步骤的第三步的部分也找到了. 这个 run 方法可以说是 Netty NIO 的核心, 属于重中之重, 把它分析明白了, 那么对 Netty 的事件循环机制也就了解了大部分了.    
+看到了上面代码的 for(;;) 所构成的死循环了没? 原来 NioEventLoop 事件循环的核心就是这里! 现在我们把上面所提到的 Selector 使用步骤的第三步的部分也找到了. 这个 run 方法可以说是 Netty NIO 的核心, 属于重中之重, 把它分析明白了, 那么对 Netty 的事件循环机制也就了解了大部分了.    
   
 #### IO事件的轮询  
 首先, 在 run 方法中, 第一步是调用 hasTasks() 方法来判断当前任务队列中是否有任务:  
@@ -1392,7 +1392,7 @@ protected boolean hasTasks() {
     return !taskQueue.isEmpty();
 }
 ```
-这个方法很简单, 仅仅是检查了一下 taskQueue 是否为空. 至于 taskQueue 是什么呢, 其实它就是存放一系列的需 要由此 EventLoop 所执行的任务列表. 关于 taskQueue, 我们这里暂时不表, 等到后面再来详细分析它. 当 taskQueue 不为空时, 就执行到了 if 分支中的 selectNow() 方法. 然而当 taskQueue 为空时, 执行的是 select(oldWakenUp) 方法. 那么 selectNow() 和 select(oldWakenUp) 之间有什么区别呢? 来看一下, selectNow() 的源码如下:
+这个方法很简单, 仅仅是检查了一下 taskQueue 是否为空. 至于 taskQueue 是什么呢, 其实它就是存放一系列的需要由此 EventLoop 所执行的任务列表. 关于 taskQueue, 我们等到后面再来详细分析它. 当 taskQueue 不为空时, 就执行到了 if 分支中的 selectNow() 方法. 然而当 taskQueue 为空时, 执行的是 select(oldWakenUp) 方法. 那么 selectNow() 和 select(oldWakenUp) 之间有什么区别呢? 来看一下, selectNow() 的源码如下:
 ``` 
 void selectNow() throws IOException {
     try {
@@ -1444,7 +1444,7 @@ taskRatio = 100 - ioRatio
 => taskTime = ioTime * (100 - ioRatio) / ioRatio
 ```
 根据上面的公式, 当我们设置 ioRate = 70 时, 则表示 IO 运行耗时占比为70%, 即假设某次循环一共耗时为 100ms, 那么根据公式, 我们知道 processSelectedKeys() 方法调用所耗时大概为70ms(即 IO 耗时), 而 runAllTasks() 耗时大概为 30ms(即执行 task 耗时). 当 ioRatio 为 100 时, Netty 就不考虑 IO 耗时的占比, 而是分别调用 processSelectedKeys()、runAllTasks(); 而当 ioRatio 不为 100时, 则执行到 else 分支, 在这个分支中, 首先记录下 processSelectedKeys() 所执行的时间(即 IO 操作的耗时), 然后根据公式, 计算出执行 task 所占用的时间, 然后以此为参数, 调用 runAllTasks().  
-我们这里先分析一下 processSelectedKeys() 方法调用, runAllTasks() 我们留到下一节再分析. processSelectedKeys() 方法的源码如下:
+我们这里先分析一下 processSelectedKeys() 方法调用. processSelectedKeys() 方法的源码如下:
 ```
 private void processSelectedKeys() {
     if (selectedKeys != null) {
@@ -1538,7 +1538,7 @@ private static void processSelectedKey(SelectionKey k, AbstractNioChannel ch) {
     } 
 }
 ```
-这个代码是 Java NIO 的 Selector 的那一套处理流程. rocessSelectedKey 中处理了三个 事件, 分别是:  
+这个代码是 Java NIO 的 Selector 的那一套处理流程. rocessSelectedKey 中处理了三事件, 分别是:  
 >OP_READ, 可读事件, 即 Channel 中收到了新数据可供上层读取.  
 OP_WRITE, 可写事件, 即上层可以向 Channel 写入数据.  
 OP_CONNECT, 连接建立事件, 即 TCP 连接已经建立, Channel 处于 active 状态.  
@@ -1683,7 +1683,7 @@ protected void addTask(Runnable task) {
 因此实际上, taskQueue 是存放着待执行的任务的队列.  
    
 schedule 任务  
-除了通过 execute 添加普通的 Runnable 任务外, 我们还可以通过调用 eventLoop.scheduleXXX 之类的方法来添加一个定时任务. EventLoop 中实现任务队列的功能在超类 SingleThreadEventExecutor 实现的, 而 schedule 功 能的实现是在 SingleThreadEventExecutor 的父类, 即 AbstractScheduledEventExecutor 中实现的. 在 AbstractScheduledEventExecutor 中, 有以 scheduledTaskQueue 字段: 
+除了通过 execute 添加普通的 Runnable 任务外, 我们还可以通过调用 eventLoop.scheduleXXX 之类的方法来添加一个定时任务. EventLoop 中实现任务队列的功能在超类 SingleThreadEventExecutor 实现的, 而 schedule 功能的实现是在 SingleThreadEventExecutor 的父类, 即 AbstractScheduledEventExecutor 中实现的. 在 AbstractScheduledEventExecutor 中, 有以 scheduledTaskQueue 字段: 
 ```
 Queue<ScheduledFutureTask<?>> scheduledTaskQueue;
 ```
