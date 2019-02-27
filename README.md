@@ -322,7 +322,7 @@ public class ServerInitializer extends ChannelInitializer<SocketChannel> {
 服务相关的设置的代码写完之后，我们再来编写主要的业务代码。使⽤Netty编写业务层的代码，我们需要继承 ChannelInboundHandlerAdapter 或 SimpleChannelInboundHandler 类，在这里顺便说下它们两的区别吧。继承 SimpleChannelInboundHandler 类之后，会在接收到数据后自动 release 掉数据占⽤的 Bytebuffer 资源。并且继承该类需要指定数据格式。而继承ChannelInboundHandlerAdapter 则不会⾃动释放，需要⼿动调用 ReferenceCountUtil.release() 等方法进行释放。继承该类不需要指定数据格式。所以在这⾥，个人推荐服务端继承 ChannelInboundHandlerAdapter ，手动进⾏释放，防止数据未处理完就自动释放了。而且服务端可能有多个客户端进行连接，并且每一个客户端请求的数据格式都不一致，这时便可以进⾏相应的处理。客户端根据情况可以继承 SimpleChannelInboundHandler 类。好处是直接指定好传输的数据格式，就不需要再进行格式的转换了。  
 ```
 @Sharable
-public class ServerHandler extends SimpleChannelInboundHandler<String>{
+public class ServerHandler extends ChannelInboundHandlerAdapter<String>{
   /**
   - 建⽴连接时，发送⼀条庆祝消息 */
   @Override
@@ -334,7 +334,7 @@ public class ServerHandler extends SimpleChannelInboundHandler<String>{
   }
   //业务逻辑处理
   @Override
-  public void channelRead0(ChannelHandlerContext ctx, String request) throws Exception  {
+  public void channelRead(ChannelHandlerContext ctx, String request) throws Exception  {
     // Generate and write a response.
     String response;
     boolean close = false;
